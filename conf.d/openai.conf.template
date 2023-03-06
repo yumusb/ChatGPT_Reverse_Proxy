@@ -1,0 +1,47 @@
+server {
+    listen 80 default_server;
+    server_name _;
+    return 444;
+}
+server
+{
+    listen 80;
+    server_name ${DOMAIN};
+    location /api/auth/session {
+        default_type application/json;
+        return 200 '{"user":{"id":"?","name":"","email":"","image":"","picture":"","groups":[]},"expires":"2023-03-30T06:13:35.538Z","accessToken":"fuck"}';
+    }
+    set $token ${ACCESS_TOKEN};
+    location = /backend-api/conversations {
+        default_type application/json;
+        if ($request_method = GET) {
+            return 200 '{"items":[{"id":"a8b7ed54-529b-4360-882c-c8a410410000","title":"历史会话功能不可用","create_time":"2023-02-28T06:37:40.999323"}],"total":1,"limit":20,"offset":0}';
+        }
+        proxy_pass        https://apps.openai.com/api/;
+        proxy_set_header  Host apps.openai.com;
+        proxy_set_header  Origin 'https://home.apps.openai.com';
+        proxy_set_header  'Referer' 'https://home.apps.openai.com/';
+        proxy_set_header  Authorization "Bearer $token";
+        proxy_hide_header access-control-allow-credentials;
+        proxy_hide_header access-control-allow-origin;
+        proxy_hide_header strict-transport-security;
+    }
+    location /backend-api/ {
+        proxy_pass        https://apps.openai.com/api/;
+        proxy_set_header  Host apps.openai.com;
+        proxy_set_header  Origin 'https://home.apps.openai.com';
+        proxy_set_header  'Referer' 'https://home.apps.openai.com/';
+        proxy_set_header  Authorization "Bearer $token";
+        proxy_hide_header access-control-allow-credentials;
+        proxy_hide_header access-control-allow-origin;
+        proxy_hide_header strict-transport-security;
+    }
+    location = / {
+      rewrite ^/(.*) /chat/ permanent;
+    }
+    location /chat/ {
+        alias /var/www/html/;
+        sub_filter 'help us improve.' 'help us improve.<a href="https://33.al" target="_blank">Blog</a>';
+    }
+    
+}

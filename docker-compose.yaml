@@ -1,0 +1,14 @@
+version: '2'
+services:
+  nginx:
+    image: nginx:stable-alpine
+    restart: always
+    ports:
+      - 127.0.0.1:30050:80
+    volumes:
+      - "./conf.d:/etc/nginx/templates/"
+      - "./html:/var/www/html"
+    environment:
+      NGINX_ENVSUBST_TEMPLATE_SUFFIX: ".template"
+      ACCESS_TOKEN: you_token
+      DOMAIN: chat.yourdomain.com
