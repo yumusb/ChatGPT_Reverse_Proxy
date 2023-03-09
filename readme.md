@@ -13,4 +13,6 @@ docker-compose up -d
 
 ---
 如果想要历史会话功能可用的话，将conf.d/openai.conf.template 中 location = /backend-api/conversations  条件 整体注释掉  
-访问的host字段 需要与 配置项中 的 DOMAIN 对应。
+访问的host字段 需要与 配置项中 的 DOMAIN 对应。  
+
+目前为失效状态 2023.03.09 15:38 
